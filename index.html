@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+  <meta name="theme-color" content="#f7f7ff">
+  <title>English Boost</title>
+  <link rel="stylesheet" href="styles-v2.css?v=4.0.0-cards2">
+  <script src="words.js?v=4.0.0-cards2" defer></script>
+  <script src="app-v2.js?v=4.1.0-audio-activity" defer></script>
+  <script src="motion-v4.js?v=4.0.0-cards2" defer></script>
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true">
+    <defs>
+      <linearGradient id="gPurple" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a768ff"/><stop offset=".52" stop-color="#6c2ff2"/><stop offset="1" stop-color="#3222bc"/></linearGradient>
+      <linearGradient id="gBlue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#73ddff"/><stop offset="1" stop-color="#3470ed"/></linearGradient>
+      <linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff071"/><stop offset=".5" stop-color="#ffc11b"/><stop offset="1" stop-color="#ff7f1f"/></linearGradient>
+      <linearGradient id="gWhite" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset=".62" stop-color="#eeeaff"/><stop offset="1" stop-color="#c6baf6"/></linearGradient>
+      <radialGradient id="gWindow"><stop stop-color="#8fe8ff"/><stop offset=".45" stop-color="#3274e8"/><stop offset=".7" stop-color="#3820a1"/><stop offset="1" stop-color="#140b54"/></radialGradient>
+      <filter id="soft3d" x="-40%" y="-40%" width="180%" height="190%"><feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#271175" flood-opacity=".32"/></filter>
+      <filter id="tiny3d" x="-40%" y="-40%" width="180%" height="190%"><feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#3e238e" flood-opacity=".24"/></filter>
+    </defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.8 12 3l9 7.8v8.4a1.8 1.8 0 0 1-1.8 1.8H4.8A1.8 1.8 0 0 1 3 19.2Z"/><path d="M9 21v-7h6v7"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M3 5.5A3.5 3.5 0 0 1 6.5 2H11v17H6.5A3.5 3.5 0 0 0 3 22Z"/><path d="M21 5.5A3.5 3.5 0 0 0 17.5 2H13v17h4.5A3.5 3.5 0 0 1 21 22Z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.7a5.5 5.5 0 0 0-7.8 0L12 5.8l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.4 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.7 6.7 0 0 0 21 12.8Z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></symbol>
+    <symbol id="i-review" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-skip" viewBox="0 0 24 24"><path d="m5 5 10 7L5 19Z"/><path d="M19 5v14"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 22c4.4 0 8-3.2 8-7.7 0-3.2-1.8-6.3-5-9.3.2 3-1.5 4.2-2.7 2.4C11.4 6.1 11 4.2 11.5 2 7.6 4.8 4 8.7 4 14.3 4 18.8 7.6 22 12 22Z"/><path d="M9.5 17.5c0 1.5 1.1 2.5 2.5 2.5s2.5-1 2.5-2.5c0-1.2-.7-2.4-2-3.5.1 1.2-.6 1.7-1.1 1-.4-.6-.6-1.3-.4-2.2-1 .9-1.5 2-1.5 4.7Z"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0Z"/><path d="M7 6H3v2a4 4 0 0 0 4 4M17 6h4v2a4 4 0 0 1-4 4"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3" cy="6" r="1"/><circle cx="3" cy="12" r="1"/><circle cx="3" cy="18" r="1"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2.5 3 6 6.5 1-4.8 4.6 1.2 6.4-5.9-3.1-5.9 3.1 1.2-6.4-4.8-4.6 6.5-1Z"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.86 2.86-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21H9.6v-.1A1.7 1.7 0 0 0 8.5 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.86-2.86.06-.06A1.7 1.7 0 0 0 4.1 15a1.7 1.7 0 0 0-1.6-1H2v-4h.5a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06L6.56 4.2l.06.06A1.7 1.7 0 0 0 8.5 4.6a1.7 1.7 0 0 0 1-1.6V3h4v.1a1.7 1.7 0 0 0 1.5 1.5 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.86 2.86-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.6 1h1v4h-1a1.7 1.7 0 0 0-1.6 1Z"/></symbol>
+    <symbol id="i-quiz" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m7 9 2 2 3-4M14 9h3M7 16l2 2 3-4M14 16h3"/></symbol>
+    <symbol id="i-headphones" viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><path d="M4 14h3v7H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 1-2ZM20 14h-3v7h2a2 2 0 0 0 2-2v-3a2 2 0 0 0-1-2Z"/></symbol>
+    <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M10 13h.01M14 13h.01M18 13h.01M7 16h10"/></symbol>
+    <symbol id="i-translate" viewBox="0 0 24 24"><path d="M4 5h9M8.5 3v2M6 8c1.1 2.7 3 4.7 6 6M12 8c-1.1 2.8-3 4.8-6 6M14 21l4-10 4 10M15.5 17h5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.7 2.6 18a2 2 0 0 0 1.8 3h15.2a2 2 0 0 0 1.8-3L13.7 3.7a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 7 4 12l5 5"/><path d="M20 18a8 8 0 0 0-8-8H4"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 2 1.7 5.3L19 9l-5.3 1.7L12 16l-1.7-5.3L5 9l5.3-1.7ZM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8Z"/></symbol>
+    <symbol id="i-cards" viewBox="0 0 24 24"><rect x="5" y="4" width="15" height="16" rx="3"/><path d="M5 17H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h12"/><path d="M9 9h7M9 13h5"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5Z"/><path d="m3 12 9 5 9-5M3 17l9 5 9-5"/></symbol>
+    <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M14 5c3.5-3.5 7.5-3 7.5-3s.5 4-3 7.5l-4 4-4-4Z"/><path d="m10.5 9.5-5 .5-3 3 6 1.5M14.5 13.5l-.5 5-3 3-1.5-6"/><circle cx="16.5" cy="7" r="1.5"/><path d="M6 18c-2 0-3 1-4 4 3-1 4-2 4-4Z"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24"><path d="m4 20 4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11Z"/><path d="m14.5 7 3 3M4 20h7"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 3h6l1 4H8Z"/><path d="m6 7 1 14h10l1-14M10 11v6M14 11v6"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M13.5 6.5 17.5 10.5M4 20l4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11Z"/><path d="M13 20h7"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/><path d="M10 21h4"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.4" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="avatar-boy" viewBox="0 0 80 80">
+      <circle cx="40" cy="40" r="40" fill="#d9ceff"/><path d="M16 80c2-17 12-24 24-24s22 7 24 24" fill="url(#gPurple)"/><ellipse cx="40" cy="37" rx="20" ry="23" fill="#d98b5e"/><path d="M20 31C18 13 30 6 43 9c12-5 22 7 17 19-6-8-13-7-20-6-6 1-11-2-14 7Z" fill="#3e211d"/><path d="M24 20c3-10 12-12 18-8M33 16c6-9 15-5 18 0M46 15c8-4 14 5 11 12" fill="none" stroke="#241416" stroke-width="5" stroke-linecap="round"/><circle cx="32" cy="36" r="2.2" fill="#241416"/><circle cx="48" cy="36" r="2.2" fill="#241416"/><path d="M33 47c5 5 10 5 15 0" fill="#fff" stroke="#8e3b36" stroke-width="1.2" stroke-linecap="round"/><path d="M39 37c-1 4-2 7 2 7" fill="none" stroke="#a95343" stroke-width="1.2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="scene-rocket" viewBox="0 0 250 210">
+      <g opacity=".8" fill="#ffe86a"><path d="m29 50 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z"/><path d="m208 35 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/><circle cx="57" cy="28" r="2"/><circle cx="190" cy="81" r="2.5"/></g>
+      <g filter="url(#soft3d)" transform="rotate(34 130 109)"><g class="rocket-body"><path d="M128 30c31 19 45 54 41 94l-39 33-39-33c-4-40 10-75 37-94Z" fill="url(#gWhite)"/><path d="M98 110 66 141l32 1 15-18ZM161 110l32 31-32 1-15-18Z" fill="url(#gPurple)"/><ellipse cx="130" cy="84" rx="23" ry="23" fill="#26136f"/><ellipse cx="130" cy="84" rx="16" ry="16" fill="url(#gWindow)"/><ellipse cx="125" cy="78" rx="7" ry="5" fill="#c6f4ff" opacity=".7"/><path d="m112 146 18 55 18-55-18 13Z" fill="url(#gGold)"/><path d="m120 150 10 38 10-38-10 10Z" fill="#ff7338"/></g></g>
+      <g class="rocket-clouds" fill="#fff" opacity=".94"><ellipse cx="20" cy="201" rx="45" ry="24"/><ellipse cx="72" cy="199" rx="53" ry="32"/><ellipse cx="122" cy="205" rx="45" ry="25"/></g>
+    </symbol>
+    <symbol id="scene-target" viewBox="0 0 110 110">
+      <g filter="url(#tiny3d)"><circle cx="51" cy="57" r="43" fill="url(#gWhite)"/><circle cx="51" cy="57" r="33" fill="url(#gPurple)"/><circle cx="51" cy="57" r="22" fill="#fff"/><circle cx="51" cy="57" r="11" fill="#7137ef"/><path d="M96 15 51 57" stroke="#ffb01d" stroke-width="5" stroke-linecap="round"/><path d="M51 57 62 54 55 46Z" fill="#ff7a3d"/><path d="M94 17 105 10 101 24Z" fill="#ffb01d"/><path d="M94 17 99 29 87 25Z" fill="#ff6c46"/></g>
+    </symbol>
+    <symbol id="scene-books-planet" viewBox="0 0 180 135">
+      <g opacity=".85" fill="#ffe969"><path d="m22 22 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/><path d="m153 20 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z"/><circle cx="161" cy="79" r="2.5"/></g><g filter="url(#soft3d)"><circle cx="93" cy="72" r="38" fill="url(#gPurple)"/><ellipse cx="93" cy="72" rx="55" ry="17" fill="none" stroke="#c7b2ff" stroke-width="8" transform="rotate(-15 93 72)"/><path d="M65 50c17-12 38-11 54 1-8 4-16 4-24 0-10-5-19 3-30-1ZM69 87c13-6 22 1 33 3 8 2 14-2 20-5-8 14-24 24-43 19Z" fill="#b58aff" opacity=".58"/></g><g filter="url(#tiny3d)" transform="rotate(-12 40 77)"><path d="M13 54c11-4 20-1 27 6v39c-7-7-16-9-27-5Z" fill="#fff"/><path d="M67 54c-11-4-20-1-27 6v39c7-7 16-9 27-5Z" fill="#d9c9ff"/><path d="M18 61c7-2 12-1 17 2M48 63c5-3 10-4 15-2" fill="none" stroke="#7540e9" stroke-width="3" stroke-linecap="round"/></g><g filter="url(#tiny3d)" transform="translate(110 68) rotate(18 26 27)"><path d="M4 8c8-3 15-1 22 5v35c-7-6-14-8-22-4Z" fill="#8c55ff"/><path d="M48 8c-8-3-15-1-22 5v35c7-6 14-8 22-4Z" fill="#fff"/></g>
+    </symbol>
+    <symbol id="scene-headphones" viewBox="0 0 155 120">
+      <g opacity=".8" fill="#ffe96b"><path d="m130 22 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/><circle cx="21" cy="28" r="3"/></g><g filter="url(#soft3d)"><path d="M30 73V61c0-31 19-49 48-49s48 18 48 49v12" fill="none" stroke="url(#gWhite)" stroke-width="17" stroke-linecap="round"/><path d="M38 61c0-25 15-40 40-40s40 15 40 40" fill="none" stroke="#9864ff" stroke-width="7" stroke-linecap="round"/><rect x="18" y="58" width="32" height="49" rx="14" fill="url(#gPurple)"/><rect x="106" y="58" width="32" height="49" rx="14" fill="url(#gPurple)"/><rect x="24" y="65" width="18" height="34" rx="9" fill="#c5a7ff"/><rect x="114" y="65" width="18" height="34" rx="9" fill="#c5a7ff"/><path d="M50 88c17 19 39 19 56 0" fill="none" stroke="#66d8ff" stroke-width="5" stroke-linecap="round" opacity=".75"/></g>
+    </symbol>
+    <symbol id="scene-trophy" viewBox="0 0 165 145">
+      <g opacity=".85" fill="#fff176"><path d="m137 15 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z"/><circle cx="24" cy="38" r="3"/><circle cx="147" cy="71" r="2"/></g><g filter="url(#soft3d)"><path d="M51 27h63v38c0 27-13 42-31 42S51 92 51 65Z" fill="url(#gGold)"/><path d="M62 33h42v31c0 19-8 30-21 30S62 83 62 64Z" fill="#ffd95c" opacity=".55"/><path d="M51 39H27v19c0 21 15 32 34 33M114 39h24v19c0 21-15 32-34 33" fill="none" stroke="#ffb51f" stroke-width="10" stroke-linecap="round"/><path d="M76 105h14v17H76Z" fill="#8b4cff"/><path d="M56 120h54l9 15H47Z" fill="url(#gPurple)"/><path d="m83 40 6 12 13 2-10 10 3 14-12-7-13 7 3-14-10-10 14-2Z" fill="#fff"/><ellipse cx="83" cy="137" rx="44" ry="6" fill="#241083" opacity=".24"/></g>
+    </symbol>
+  </svg>
+
+  <main id="app">
+    <div class="boot-screen">
+      <div class="brand-mark"><svg><use href="#i-book"/></svg></div>
+      <h1>English Boost</h1>
+      <div class="boot-loader"><span></span></div>
+    </div>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <noscript>يحتاج التطبيق إلى JavaScript لعرض الكلمات.</noscript>
+</body>
+</html>
