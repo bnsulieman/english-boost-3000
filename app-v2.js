@@ -34,11 +34,6 @@
   let uiAudioContext = null;
   let velvetSoundPool = [];
   let velvetSoundCursor = 0;
-  let audioUnlocked = false;
-  let speechVoicesPrepared = false;
-  let selectedEnglishVoice = null;
-  let activeUtterance = null;
-  let speechStartTimer = null;
   let state = loadState();
 
   if (!validateDataset()) {
@@ -51,7 +46,6 @@
   normalizeActiveSession();
   applyTheme(false);
   installHistory();
-  prepareSpeechVoices();
   saveState();
   render();
 
@@ -82,7 +76,6 @@
       progress: {},
       favorites: [],
       activityDates: [],
-      activityLog: {},
       positions: {},
       daily: null,
       activeSession: null,
@@ -159,12 +152,6 @@
 
     merged.favorites = [...new Set(merged.favorites.map(Number).filter(id => WORD_BY_ID.has(id)))];
     merged.activityDates = [...new Set(merged.activityDates.filter(value => /^\d{4}-\d{2}-\d{2}$/.test(value)))].slice(-180);
-    merged.activityLog = normalizeActivityLog(stored.activityLog);
-    merged.activityDates.forEach(date => {
-      if (!merged.activityLog[date]) {
-        merged.activityLog[date] = { firstAt: 0, lastAt: 0, actions: 0, lastPeriod: '', periods: { morning: 0, afternoon: 0, evening: 0, night: 0 } };
-      }
-    });
     Object.keys(merged.progress).forEach(id => {
       if (!WORD_BY_ID.has(Number(id)) || !['learned', 'review'].includes(merged.progress[id])) delete merged.progress[id];
     });
@@ -226,30 +213,6 @@
     merged.cardStats = normalizeCardStats(stored.cardStats, validCardIds);
     merged.cardHistory = Array.isArray(stored.cardHistory) ? stored.cardHistory.filter(item => item && typeof item === 'object' && Number(item.total) > 0 && merged.cardDecks.some(deck => deck.id === String(item.deckId || ''))).slice(0, 30) : [];
     return merged;
-  }
-
-  function normalizeActivityLog(value) {
-    const result = {};
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return result;
-    Object.entries(value).slice(-180).forEach(([date, raw]) => {
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !raw || typeof raw !== 'object') return;
-      const rawPeriods = raw.periods && typeof raw.periods === 'object' ? raw.periods : {};
-      const periods = {
-        morning: clampInt(rawPeriods.morning, 0, 100000),
-        afternoon: clampInt(rawPeriods.afternoon, 0, 100000),
-        evening: clampInt(rawPeriods.evening, 0, 100000),
-        night: clampInt(rawPeriods.night, 0, 100000)
-      };
-      const lastPeriod = ['morning', 'afternoon', 'evening', 'night'].includes(raw.lastPeriod) ? raw.lastPeriod : '';
-      result[date] = {
-        firstAt: Number(raw.firstAt) || 0,
-        lastAt: Number(raw.lastAt) || 0,
-        actions: clampInt(raw.actions, 0, 100000),
-        lastPeriod,
-        periods
-      };
-    });
-    return result;
   }
 
   function normalizeWritingSession(value) {
@@ -400,23 +363,6 @@
     return `${year}-${month}-${day}`;
   }
 
-  function timePeriodKey(date = new Date()) {
-    const hour = date.getHours();
-    if (hour >= 5 && hour < 12) return 'morning';
-    if (hour >= 12 && hour < 18) return 'afternoon';
-    if (hour >= 18 && hour < 23) return 'evening';
-    return 'night';
-  }
-
-  function timePeriodLabel(period) {
-    return {
-      morning: 'صباحًا',
-      afternoon: 'ظهرًا',
-      evening: 'مساءً',
-      night: 'ليلًا'
-    }[period] || 'الآن';
-  }
-
   function dateSeed(dateKey) {
     const [year, month, day] = dateKey.split('-').map(Number);
     const localMidnight = new Date(year, month - 1, day).getTime();
@@ -516,62 +462,6 @@
     render();
   }
 
-  function isIOSWebKit() {
-    const userAgent = navigator.userAgent || '';
-    return /iP(hone|ad|od)/i.test(userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  }
-
-  function prepareSpeechVoices() {
-    if (!('speechSynthesis' in window)) return;
-    const chooseVoice = () => {
-      const voices = window.speechSynthesis.getVoices();
-      selectedEnglishVoice = voices.find(voice => /^en-US$/i.test(voice.lang))
-        || voices.find(voice => /^en(-|_)/i.test(voice.lang))
-        || null;
-    };
-    chooseVoice();
-    if (speechVoicesPrepared) return;
-    speechVoicesPrepared = true;
-    if (typeof window.speechSynthesis.addEventListener === 'function') {
-      window.speechSynthesis.addEventListener('voiceschanged', chooseVoice);
-    } else {
-      window.speechSynthesis.onvoiceschanged = chooseVoice;
-    }
-  }
-
-  function unlockAudio() {
-    prepareSpeechVoices();
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (AudioContextClass) {
-      try {
-        if (!uiAudioContext || uiAudioContext.state === 'closed') uiAudioContext = new AudioContextClass();
-        if (uiAudioContext.state === 'suspended') {
-          const resumed = uiAudioContext.resume();
-          if (resumed && typeof resumed.catch === 'function') resumed.catch(() => {});
-        }
-      } catch (_error) {
-        // AudioContext is optional.
-      }
-    }
-    if (!audioUnlocked && !isIOSWebKit()) {
-      audioUnlocked = true;
-      for (let index = 0; index < 2; index += 1) {
-        try {
-          if (!velvetSoundPool[index]) {
-            const sound = new Audio('ui-velvet-click.wav');
-            sound.preload = 'auto';
-            sound.load();
-            velvetSoundPool[index] = sound;
-          }
-        } catch (_error) {
-          // The synthesized click remains available.
-        }
-      }
-    } else {
-      audioUnlocked = true;
-    }
-  }
-
   function playVelvetClick(kind) {
     try {
       const slot = velvetSoundCursor % 2;
@@ -580,10 +470,8 @@
       if (!sound) {
         sound = new Audio('ui-velvet-click.wav');
         sound.preload = 'auto';
-        sound.load();
         velvetSoundPool[slot] = sound;
       }
-      if (sound.readyState < 2) return false;
       sound.pause();
       sound.currentTime = 0;
       sound.volume = 1;
@@ -600,7 +488,7 @@
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) return;
     try {
-      if (!uiAudioContext || uiAudioContext.state === 'closed') uiAudioContext = new AudioContextClass();
+      if (!uiAudioContext) uiAudioContext = new AudioContextClass();
       const emit = () => {
         if (!uiAudioContext || uiAudioContext.state === 'closed') return;
         const now = uiAudioContext.currentTime;
@@ -631,8 +519,7 @@
 
   function playUiSound(kind = 'navigate') {
     if (!state.settings.navigationSounds || document.visibilityState === 'hidden') return;
-    unlockAudio();
-    if ((kind === 'navigate' || kind === 'back') && !isIOSWebKit() && playVelvetClick(kind)) return;
+    if ((kind === 'navigate' || kind === 'back') && playVelvetClick(kind)) return;
     playSynthUiTone(kind);
   }
 
@@ -789,31 +676,9 @@
   }
 
   function recordActivity() {
-    const now = new Date();
-    const timestamp = now.getTime();
-    const today = localDateKey(now);
-    const period = timePeriodKey(now);
+    const today = localDateKey();
     if (!state.activityDates.includes(today)) state.activityDates.push(today);
     state.activityDates = [...new Set(state.activityDates)].slice(-180);
-    if (!state.activityLog || typeof state.activityLog !== 'object') state.activityLog = {};
-    const entry = state.activityLog[today] || {
-      firstAt: timestamp,
-      lastAt: timestamp,
-      actions: 0,
-      lastPeriod: period,
-      periods: { morning: 0, afternoon: 0, evening: 0, night: 0 }
-    };
-    entry.firstAt = Number(entry.firstAt) || timestamp;
-    entry.lastAt = timestamp;
-    entry.actions = clampInt(entry.actions, 0, 100000) + 1;
-    entry.lastPeriod = period;
-    if (!entry.periods || typeof entry.periods !== 'object') entry.periods = { morning: 0, afternoon: 0, evening: 0, night: 0 };
-    entry.periods[period] = clampInt(entry.periods[period], 0, 100000) + 1;
-    state.activityLog[today] = entry;
-    const allowedDates = new Set(state.activityDates);
-    Object.keys(state.activityLog).forEach(date => {
-      if (!allowedDates.has(date)) delete state.activityLog[date];
-    });
   }
 
   function masteryRecord(id) {
@@ -873,8 +738,7 @@
       hadProgress: Object.prototype.hasOwnProperty.call(state.progress, id),
       previousProgress: state.progress[id],
       previousMastery: state.mastery[id] ? Object.assign({}, state.mastery[id]) : null,
-      activityDates: state.activityDates.slice(),
-      activityLog: JSON.parse(JSON.stringify(state.activityLog || {}))
+      activityDates: state.activityDates.slice()
     };
 
     if (action === 'learned') {
@@ -919,7 +783,6 @@
     if (snapshot.previousMastery) state.mastery[snapshot.id] = snapshot.previousMastery;
     else delete state.mastery[snapshot.id];
     state.activityDates = snapshot.activityDates;
-    state.activityLog = snapshot.activityLog || {};
     undoSnapshot = null;
     haptic('selection');
     saveState();
@@ -947,7 +810,6 @@
   function speak(text, requestedRate = state.settings.speechRate) {
     const clean = String(text || '').trim();
     if (!clean) return;
-    unlockAudio();
     if (window.AndroidSpeech && typeof window.AndroidSpeech.speak === 'function') {
       try {
         window.AndroidSpeech.speak(clean, Number(requestedRate) || 0.86, 1.0);
@@ -955,31 +817,11 @@
       } catch (_error) { /* Use browser fallback. */ }
     }
     if ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
-      const synth = window.speechSynthesis;
-      clearTimeout(speechStartTimer);
-      try { synth.cancel(); } catch (_error) { /* Continue with a fresh utterance. */ }
+      speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(clean);
       utterance.lang = 'en-US';
       utterance.rate = Number(requestedRate) || 0.86;
-      utterance.pitch = 1;
-      utterance.volume = 1;
-      if (selectedEnglishVoice) utterance.voice = selectedEnglishVoice;
-      activeUtterance = utterance;
-      const clearActive = () => {
-        if (activeUtterance === utterance) activeUtterance = null;
-      };
-      utterance.onend = clearActive;
-      utterance.onerror = clearActive;
-      const startSpeaking = () => {
-        if (activeUtterance !== utterance || document.visibilityState === 'hidden') return;
-        try {
-          synth.resume();
-          synth.speak(utterance);
-        } catch (_error) {
-          showToast('تعذّر تشغيل الصوت الآن');
-        }
-      };
-      speechStartTimer = window.setTimeout(startSpeaking, isIOSWebKit() ? 35 : 0);
+      speechSynthesis.speak(utterance);
     } else {
       showToast('الصوت غير متاح على هذا الجهاز');
     }
@@ -1014,13 +856,9 @@
 
   function stopSpeech() {
     clearAutoSpeechTimers(false);
-    clearTimeout(speechStartTimer);
-    speechStartTimer = null;
-    activeUtterance = null;
     if (window.AndroidSpeech && typeof window.AndroidSpeech.stop === 'function') {
       try { window.AndroidSpeech.stop(); } catch (_error) { /* Optional bridge. */ }
-    }
-    if ('speechSynthesis' in window) {
+    } else if ('speechSynthesis' in window) {
       try { speechSynthesis.cancel(); } catch (_error) { /* Optional browser fallback. */ }
     }
   }
@@ -1041,7 +879,7 @@
       const button = document.querySelector('[data-action="speak"][data-id="' + word.id + '"]');
       if (button) animateSpeechButton(button);
       speak(word.word);
-    }, 110);
+    }, 280);
     if (state.settings.autoSpeakSentence && word.examples[0] && word.examples[0].en) {
       const sentenceDelay = 1500 + Math.min(1800, String(word.word).length * 90);
       autoSentenceTimer = window.setTimeout(() => {
@@ -1085,28 +923,9 @@
     return streak;
   }
 
-  function totalLearningDays() {
-    return [...new Set(state.activityDates || [])].length;
-  }
-
-  function learningDayNumber() {
-    const dates = [...new Set(state.activityDates || [])].sort();
-    const today = localDateKey();
-    const todayIndex = dates.indexOf(today);
-    return todayIndex >= 0 ? todayIndex + 1 : dates.length + 1;
-  }
-
-  function todayActivitySummary() {
-    const entry = state.activityLog && state.activityLog[localDateKey()];
-    if (!entry || !entry.actions) return `جاهز للبدء ${timePeriodLabel(timePeriodKey())}`;
-    return `آخر نشاط ${timePeriodLabel(entry.lastPeriod || timePeriodKey())}`;
-  }
-
   function greetingText() {
-    const period = timePeriodKey();
-    const greeting = period === 'morning' ? 'صباح الخير'
-      : period === 'night' ? 'أهلًا بك ليلًا'
-      : 'مساء الخير';
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? 'صباح الخير' : hour < 18 ? 'مساء الخير' : 'أهلًا بعودتك';
     return `${greeting}${state.userName ? `، ${esc(state.userName)}` : ''} 👋`;
   }
 
@@ -1401,7 +1220,7 @@
       const button = document.querySelector(`[data-action="test-speak"][data-id="${question.target.id}"]`);
       if (button) animateSpeechButton(button);
       speak(question.target.word);
-    }, 130);
+    }, 380);
   }
 
   function writingSourceLabel(source) {
@@ -1488,7 +1307,7 @@
       const button = document.querySelector(`[data-action="writing-speak"][data-id="${word.id}"]`);
       if (button) animateSpeechButton(button);
       speak(word.word);
-    }, 120);
+    }, 320);
   }
 
   function renderWriting() {
@@ -1685,7 +1504,7 @@
       const button = document.querySelector(`[data-action="card-speak"][data-card-id="${question.target.id}"]`);
       if (button) animateSpeechButton(button);
       speak(question.target.english);
-    }, 130);
+    }, 360);
   }
 
   function renderCards() {
@@ -1945,7 +1764,7 @@
       </header>
       <label class="lux-search">${icon('search')}<input id="homeSearch" type="search" dir="auto" autocomplete="off" value="${esc(state.search)}" placeholder="ابحث عن كلمة أو معنى..." aria-label="ابحث عن كلمة أو معنى"></label>
       <div id="searchResults">${state.search ? renderSearchResults(state.search) : ''}</div>
-      <div class="lux-motto"><strong>اليوم التعليمي ${learningDayNumber()} · ${todayActivitySummary()}</strong></div>
+      <div class="lux-motto"><strong>كل كلمة تقرّبك من الطلاقة</strong></div>
       <article class="lux-hero">
         <span class="lux-hero-label">${icon('book', 'icon-sm')} استكمل تعلّمك</span>
         <svg class="lux-rocket-scene" viewBox="0 0 250 210" aria-hidden="true"><use href="#scene-rocket"></use></svg>
@@ -2073,7 +1892,6 @@
       <header class="lux-page-heading"><div><h1>إحصائياتك</h1><p>تقدّم الكلمات والاختبارات</p></div>${headerActions()}</header>
       <article class="lux-stats-hero"><div><h2>ملخص تقدّمك</h2><p>نتائج الكلمات والاختبارات</p><strong class="lux-stats-score">${overall}%</strong></div><svg class="lux-trophy-scene" viewBox="0 0 165 145" aria-hidden="true"><use href="#scene-trophy"></use></svg></article>
       <div class="stat-grid four"><div class="stat-card"><strong>${learned}</strong><span>تعلّمتها</span></div><div class="stat-card"><strong>${masteredCount()}</strong><span>متقنة</span></div><div class="stat-card"><strong>${overallTestAccuracy()}%</strong><span>دقة الاختبارات</span></div><div class="stat-card"><strong>${streakCount()}</strong><span>سلسلة الأيام</span></div></div>
-      <article class="test-summary"><span>${icon('flame')}</span><div><strong>اليوم التعليمي ${learningDayNumber()}</strong><p>${totalLearningDays()} أيام تعلّم مسجّلة · ${todayActivitySummary()}</p></div></article>
       <div class="section"><div class="section-head"><h2>هدف اليوم</h2><span>${daily.index} / 50</span></div><div class="wide-track"><i style="width:${Math.round((daily.index / 50) * 100)}%"></i></div></div>
       <div class="section"><div class="section-head"><h2>تقدم المستويات</h2></div><div class="level-stats">${LEVELS.map(level => {
         const learnedLevel = learnedCount(LEVEL_WORDS[level]);
@@ -2353,10 +2171,6 @@
       if (actionName === 'undo-word') undoSnapshot = null;
     }, duration);
   }
-
-  document.addEventListener('pointerdown', unlockAudio, { capture: true, passive: true });
-  document.addEventListener('touchstart', unlockAudio, { capture: true, passive: true, once: true });
-  document.addEventListener('keydown', unlockAudio, { capture: true, once: true });
 
   document.addEventListener('click', event => {
     const target = event.target.closest('[data-action]');
@@ -2671,12 +2485,7 @@
   });
 
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') {
-      stopSpeech();
-      return;
-    }
-    prepareSpeechVoices();
-    if (state.screen === 'home') render();
+    if (document.visibilityState === 'hidden') stopSpeech();
   });
 
   document.addEventListener('input', event => {
